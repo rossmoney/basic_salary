@@ -10,3 +10,8 @@
 ###< symfony/framework-bundle ###
 
 .env
+.php-cs-fixer.cache
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

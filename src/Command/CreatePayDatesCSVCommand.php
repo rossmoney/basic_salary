@@ -1,6 +1,7 @@
 <?php
 namespace App\Command;
 
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +18,8 @@ class CreatePayDatesCSVCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+
         $month = date('n');
         $currentYear = date('Y');
 
@@ -55,21 +58,25 @@ class CreatePayDatesCSVCommand extends Command
             $month++;
         }
 
-        echo 'Saving CSV...' . "\n\n";
+        $io->write('Saving CSV...' . "\n\n");
 
         try {
             $fp = fopen("dates.csv", "w");
         } catch (\Exception $e) {
-            echo 'Failed to open CSV file, it may be in use!' . "\n";
+            $io->write('Failed to open CSV file, it may be in use!' . "\n");
             die();
         }
     
         //Put each CSV line into the file
         foreach ($lines as $line) {
+
+            $outputLine = '';
             foreach ($line as $val) {
-                echo $val . ' ';
+                $outputLine .= $val . ' ';
             }
-            echo "\n";
+            $outputLine .= "\n";
+
+            $io->write($outputLine);
 
             fputcsv(
                 $fp, // The file pointer
@@ -79,6 +86,9 @@ class CreatePayDatesCSVCommand extends Command
         }
     
         fclose($fp); //Close CSV file
+
+        // Write to the standard output
+        $io->write("\n" . 'dates.csv was saved');
 
         return Command::SUCCESS;
     }
